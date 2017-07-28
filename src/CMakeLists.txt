@@ -1,11 +1,10 @@
 
+add_executable(check_snmp_disks check_snmp_disks.c)
 
-add_executable(check_snmp_disk check_snmp_disk.c)
-
-target_link_libraries(check_snmp_disk ${NETSNMP_LIBRARIES})
+target_link_libraries(check_snmp_disks ${NETSNMP_LIBRARIES})
 
 
-install(TARGETS check_snmp_disk
+install(TARGETS check_snmp_disks
   ARCHIVE DESTINATION ${ARCHIVE_DIR}
   LIBRARY DESTINATION ${LIBRARY_DIR}
   RUNTIME DESTINATION ${RUNTIME_DIR}

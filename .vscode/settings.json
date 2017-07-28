@@ -6,6 +6,18 @@
         "snmp.h": "c",
         "session_api.h": "c",
         "stdio.h": "c",
-        "oid.h": "c"
+        "oid.h": "c",
+        "types.h": "c",
+        "varbind_api.h": "c",
+        "string2.h": "c",
+        "container.h": "c",
+        "snmp_logging.h": "c",
+        "snmpusm.h": "c",
+        "definitions.h": "c",
+        "asn1.h": "c",
+        "string.h": "c",
+        "check_snmp_extras.h": "c",
+        "output_api.h": "c",
+        "snmp_client.h": "c"
     }
 }
