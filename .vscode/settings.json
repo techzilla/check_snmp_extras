@@ -1,0 +1,11 @@
+{
+    "editor.formatOnSave": true,
+    "files.associations": {
+        "parse.h": "c",
+        "snmp_alarm.h": "c",
+        "snmp.h": "c",
+        "session_api.h": "c",
+        "stdio.h": "c",
+        "oid.h": "c"
+    }
+}
