@@ -4,8 +4,8 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "check_snmp_disks",
-            "command": "./build/bin/check_snmp_disks -v2c -c public localhost",
+            "taskName": "check_snmp_disk",
+            "command": "./build/bin/check_snmp_disk -v2c -c public localhost",
             "type": "shell",
             "group": "test",
             "problemMatcher": []

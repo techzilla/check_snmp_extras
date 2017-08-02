@@ -1,2 +1,2 @@
 
-install(FILES check_snmp.conf DESTINATION ${DATA_DIR})
+install(FILES check_snmp_extras.conf DESTINATION ${DATA_DIR})

@@ -1,7 +1,7 @@
-/** @file check_snmp_disks.c
- *  @brief Check SNMP Disks
+/** @file check_snmp_disk.c
+ *  @brief Check SNMP Disk
  *
- *  Check SNMP Disks
+ *  Check SNMP Disk
  *
  *  @author J. M. Becker
  *  @date 7/27/17
@@ -34,7 +34,7 @@ struct hrentry_t
 void
 usage(void)
 {
-    fprintf(stderr, "USAGE: check_snmp_disks ");
+    fprintf(stderr, "USAGE: check_snmp_disk ");
     snmp_parse_args_usage(stderr);
     fprintf(stderr, " [OID]\n\n");
     snmp_parse_args_descriptions(stderr);
@@ -124,8 +124,6 @@ querryentries(netsnmp_session* pss, struct hrentry_t* hentry)
 
     size_t index_len = OID_LENGTH(hrsttype_oid);
 
-    netsnmp_pdu* pdu;
-    netsnmp_pdu* response;
     netsnmp_variable_list *vars, *vp;
 
     do {
@@ -157,7 +155,7 @@ querryentries(netsnmp_session* pss, struct hrentry_t* hentry)
                 hentry->hrsttype_len = (vp->val_len / sizeof(oid));
             }
             if (netsnmp_oid_equals(hrstdesc_oid, index_len, vp->name, vp->name_length) == 0) {
-                strncpy(hentry->hrstdesc, vp->val.string, vp->val_len);
+                memcpy(hentry->hrstdesc, vp->val.string, vp->val_len);
             }
             if (netsnmp_oid_equals(hrstaunit_oid, index_len, vp->name, vp->name_length) == 0) {
                 hentry->hrstaunit = (size_t)*vp->val.integer;
@@ -205,8 +203,6 @@ main(int argc, char** argv)
     netsnmp_variable_list* hrfsst_var = NULL;
 
     netsnmp_session session, *ss;
-    netsnmp_pdu* pdu;
-    netsnmp_pdu* response;
 
     init_snmp(argv[0]);
     snmp_sess_init(&session);
@@ -240,7 +236,7 @@ main(int argc, char** argv)
 
     query_status = netsnmp_query_walk(hrstindex_var, ss);
     if (query_status != SNMP_ERR_NOERROR) {
-        if (query_status = STAT_TIMEOUT) {
+        if (query_status == STAT_TIMEOUT) {
             fprintf(stderr, "Timeout: No Response from %s\n", ss->peername);
         } else {
             fprintf(stderr, "Error in packet\nReason: %s\n", snmp_api_errstring(ss->s_snmp_errno));
@@ -252,7 +248,7 @@ main(int argc, char** argv)
 
     query_status = netsnmp_query_walk(hrfsstindex_var, ss);
     if (query_status != SNMP_ERR_NOERROR) {
-        if (query_status = STAT_TIMEOUT) {
+        if (query_status == STAT_TIMEOUT) {
             fprintf(stderr, "Timeout: No Response from %s\n", ss->peername);
         } else {
             fprintf(stderr, "Error in packet\nReason: %s\n", snmp_api_errstring(ss->s_snmp_errno));
@@ -322,20 +318,20 @@ main(int argc, char** argv)
         }
     }
 
-    char* wexit_msg = "DISKS WARNING -";
-    char* cexit_msg = "DISKS CRITICAL -";
-    char* oexit_msg = "DISKS OK -";
+    char* wexit_msg = "DISK WARNING -";
+    char* cexit_msg = "DISK CRITICAL -";
+    char* oexit_msg = "DISK OK -";
     char* exit_msg;
 
     switch (exit_status) {
 
         case STATUS_WARNING:
             exit_msg = wexit_msg;
-            break; /* optional */
+            break;
 
         case STATUS_CRITICAL:
             exit_msg = cexit_msg;
-            break; /* optional */
+            break;
         default:
             exit_msg = oexit_msg;
     }
