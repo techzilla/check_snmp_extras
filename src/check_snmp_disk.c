@@ -100,15 +100,6 @@ filterentry(struct hrentry_t* hentry)
 
     return status;
 }
-int
-laststroid(char* str_oid)
-{
-
-    int subid;
-    subid = atoi((strrchr(str_oid, '.')) + 1);
-
-    return subid;
-}
 
 void
 querryentries(netsnmp_session* pss, struct hrentry_t* hentry)
@@ -263,8 +254,7 @@ main(int argc, char** argv)
 
         for (hrfsst_var = hrfsstindex_var; hrfsst_var; hrfsst_var = hrfsst_var->next_variable) {
             if (hrst == (int)*hrfsst_var->val.integer) {
-                snprint_objid(oidbuf, MAX_OID_LEN, hrfsst_var->name, hrfsst_var->name_length);
-                hrfsst = laststroid(oidbuf);
+                hrfsst = (int)hrfsst_var->name[hrfsst_var->name_length - 1];
                 break;
             }
         }
