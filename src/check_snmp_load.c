@@ -1,7 +1,7 @@
-/** @file check_snmp_disk.c
- *  @brief Check SNMP Disk
+/** @file check_snmp_load.c
+ *  @brief Check SNMP Load
  *
- *  Check SNMP Disk
+ *  Check SNMP Load
  *
  *  @author J. M. Becker
  *  @date 7/27/17

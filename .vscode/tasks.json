@@ -9,6 +9,13 @@
             "type": "shell",
             "group": "test",
             "problemMatcher": []
+        },
+        {
+            "taskName": "check_snmp_load",
+            "command": "./build/bin/check_snmp_load -v2c -c public localhost",
+            "type": "shell",
+            "group": "test",
+            "problemMatcher": []
         }
     ]
 }

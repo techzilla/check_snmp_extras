@@ -7,6 +7,3 @@
 
 #define MAX_ENTRIES 50
 #define MAX_DISPLAYSTRING_LEN 255
-
-int warning = 80;
-int critical = 90;
