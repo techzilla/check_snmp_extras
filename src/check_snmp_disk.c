@@ -17,19 +17,19 @@ int critical = 90;
 
 struct hrentry_t
 {
-    unsigned long hrstind;
-    unsigned long hrfsind;
+    unsigned hrstind;
+    unsigned hrfsind;
 
-    unsigned long hrstaunit;
-    unsigned long hrstsize;
-    unsigned long hrstused;
+    long unsigned hrstaunit;
+    long unsigned hrstsize;
+    long unsigned hrstused;
 
     oid hrsttype[MAX_OID_LEN];
     size_t hrsttype_len;
     oid hrfstype[MAX_OID_LEN];
     size_t hrfstype_len;
 
-    char hrstdesc[MAX_DISPLAYSTRING_LEN];
+    char hrstdesc[MAX_OCTETSTRING_LEN];
 
     struct hrentry_t *prev, *next;
 };
@@ -97,7 +97,9 @@ filterentry(struct hrentry_t* hentry)
         status = 1;
     } else if (netsnmp_oid_equals(hrfstype_iso_oid, index_len, hentry->hrfstype, hentry->hrfstype_len) == 0) {
         status = 1;
-    } else if (netsnmp_oid_equals(hrfstype_other_oid, index_len, hentry->hrfstype, hentry->hrfstype_len) == 0) {
+    } 
+    
+    else if (netsnmp_oid_equals(hrfstype_other_oid, index_len, hentry->hrfstype, hentry->hrfstype_len) == 0) {
         status = 1;
     }
 
@@ -147,6 +149,7 @@ querryentries(netsnmp_session* pss, struct hrentry_t* hentry)
             if (netsnmp_oid_equals(hrsttype_oid, index_len, vp->name, vp->name_length) == 0) {
                 memcpy(hentry->hrsttype, vp->val.objid, vp->val_len);
                 hentry->hrsttype_len = (vp->val_len / sizeof(oid));
+
             }
             if (netsnmp_oid_equals(hrstdesc_oid, index_len, vp->name, vp->name_length) == 0) {
                 memcpy(hentry->hrstdesc, vp->val.string, vp->val_len);
@@ -178,21 +181,13 @@ main(int argc, char** argv)
     int query_status;
     int exit_status = STATUS_OK;
 
-    unsigned long hrst;
-    unsigned long hrfsst;
-
     struct hrentry_t* hentry = NULL;
     struct hrentry_t* hfree = NULL;
-
-    oid hrstindex_oid[] = { 1, 3, 6, 1, 2, 1, 25, 2, 3, 1, 1 };
-    size_t hrstindex_len = OID_LENGTH(hrstindex_oid);
 
     oid hrfsstindex_oid[] = { 1, 3, 6, 1, 2, 1, 25, 3, 8, 1, 7 };
     size_t hrfsstindex_len = OID_LENGTH(hrfsstindex_oid);
 
-    netsnmp_variable_list* hrstindex_var = NULL;
     netsnmp_variable_list* hrfsstindex_var = NULL;
-    netsnmp_variable_list* hrst_var = NULL;
     netsnmp_variable_list* hrfsst_var = NULL;
 
     netsnmp_session session, *ss;
@@ -225,18 +220,6 @@ main(int argc, char** argv)
     }
 
     /* Walk Indexes */
-    snmp_varlist_add_variable(&hrstindex_var, hrstindex_oid, hrstindex_len, ASN_NULL, NULL, 0);
-
-    query_status = netsnmp_query_walk(hrstindex_var, ss);
-    if (query_status != SNMP_ERR_NOERROR) {
-        if (query_status == STAT_TIMEOUT) {
-            fprintf(stderr, "Timeout: No Response from %s\n", ss->peername);
-        } else {
-            fprintf(stderr, "Error in packet\nReason: %s\n", snmp_api_errstring(ss->s_snmp_errno));
-        }
-        exit(STATUS_UNKNOWN);
-    }
-
     snmp_varlist_add_variable(&hrfsstindex_var, hrfsstindex_oid, hrfsstindex_len, ASN_NULL, NULL, 0);
 
     query_status = netsnmp_query_walk(hrfsstindex_var, ss);
@@ -244,27 +227,22 @@ main(int argc, char** argv)
         if (query_status == STAT_TIMEOUT) {
             fprintf(stderr, "Timeout: No Response from %s\n", ss->peername);
         } else {
-            fprintf(stderr, "Error in packet\nReason: %s\n", snmp_api_errstring(ss->s_snmp_errno));
+            fprintf(stderr, "Error in packet: %s\n", snmp_api_errstring(ss->s_snmp_errno));
         }
         exit(STATUS_UNKNOWN);
     }
 
-    /* Correlate indexes */
-    for (hrst_var = hrstindex_var; hrst_var; hrst_var = hrst_var->next_variable) {
-        hrst = *hrst_var->val.integer;
-        hrfsst = 0;
-
+    /* Retrieve indexes */
         for (hrfsst_var = hrfsstindex_var; hrfsst_var; hrfsst_var = hrfsst_var->next_variable) {
-            if (hrst == *hrfsst_var->val.integer) {
-                hrfsst = hrfsst_var->name[hrfsst_var->name_length - 1];
-                break;
-            }
+        
+        if (*hrfsst_var->val.integer != 0) {
+            hentry = attachentry(hentry);
+            hentry->hrstind = *hrfsst_var->val.integer;
+            hentry->hrfsind = hrfsst_var->name[hrfsst_var->name_length - 1];
         }
-        hentry = attachentry(hentry);
-        hentry->hrstind = hrst;
-        hentry->hrfsind = hrfsst;
     }
-    snmp_free_var(hrstindex_var);
+
+
     snmp_free_var(hrfsstindex_var);
 
     /* Query Entries  */
@@ -273,34 +251,35 @@ main(int argc, char** argv)
 
     /* Prepare Output */
 
-    unsigned long hsize[MAX_ENTRIES];
-    unsigned long hused[MAX_ENTRIES];
+    long unsigned hsize[MAX_ENTRIES];
+    long unsigned hused[MAX_ENTRIES];
     char bhused[MAX_ENTRIES][10];
 
     float hpused[MAX_ENTRIES];
 
-    char hrstdesc[MAX_ENTRIES][MAX_DISPLAYSTRING_LEN];
-    int i = 0;
+    char hrstdesc[MAX_ENTRIES][MAX_OCTETSTRING_LEN];
+    int i = -1;
 
     for (hfree = hentry; hfree; hfree = hfree->prev) {
         if (filterentry(hfree)) {
             continue;
         }
+        i++;
+
         hsize[i] = (hfree->hrstaunit * hfree->hrstsize);
         hused[i] = (hfree->hrstaunit * hfree->hrstused);
-
         hpused[i] = (float)(hused[i] * 100) / hsize[i];
 
         readable_fs(hused[i], &bhused[i][0]);
         strcpy(&hrstdesc[i][0], hfree->hrstdesc);
-        i++;
+
     }
 
     for (hfree = hentry; hfree; hfree = hfree->prev) {
         free(hfree);
     }
 
-    for (int n = 0; n < i; ++n) {
+    for (int n = 0; n <= i; ++n) {
         if (hpused[n] >= warning) {
             exit_status = STATUS_WARNING;
         }
@@ -309,6 +288,7 @@ main(int argc, char** argv)
             break;
         }
     }
+
 
     char* wexit_msg = "DISK WARNING -";
     char* cexit_msg = "DISK CRITICAL -";
@@ -330,13 +310,13 @@ main(int argc, char** argv)
 
     printf("%s used space:", exit_msg);
 
-    for (int n = 0; n < i; ++n) {
+    for (int n = 0; n <= i; ++n) {
         printf(" %s %s (%.1f%%);", hrstdesc[n], bhused[n], hpused[n]);
     }
 
     printf("|");
 
-    for (int n = 0; n < i; ++n) {
+    for (int n = 0; n <= i; ++n) {
         printf(" '%s'=%s", hrstdesc[n], bhused[n]);
     }
 

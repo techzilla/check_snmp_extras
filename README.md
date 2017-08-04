@@ -2,10 +2,13 @@
 
 Extra SNMP check plugins, written in C.
 
+MIB objects:
+ - [HOST-RESOURCES-MIB](http://www.net-snmp.org/docs/mibs/host.html)
+
 ### Usage
 
 
-    ./check_snmp_disks -v 2c -c <COMMUNITY> <HOSTNAME>
+    ./check_snmp_disk -v 2c -c <COMMUNITY> <HOSTNAME>
 
 
 ### Prerequisites
