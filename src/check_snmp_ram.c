@@ -1,7 +1,7 @@
-/** @file check_snmp_disk.c
- *  @brief Check SNMP Disk
+/** @file check_snmp_ram.c
+ *  @brief Check SNMP Ram
  *
- *  Check SNMP Disk
+ *  Check SNMP Ram
  *
  *  @author J. M. Becker
  *  @date 7/27/17
@@ -18,7 +18,6 @@ int critical = 90;
 struct hrentry_t
 {
     unsigned hrstind;
-    unsigned hrfsind;
 
     long unsigned hrstaunit;
     long unsigned hrstsize;
@@ -26,8 +25,6 @@ struct hrentry_t
 
     oid hrsttype[MAX_OID_LEN];
     size_t hrsttype_len;
-    oid hrfstype[MAX_OID_LEN];
-    size_t hrfstype_len;
 
     char hrstdesc[MAX_OCTETSTRING_LEN];
 
@@ -37,7 +34,7 @@ struct hrentry_t
 void
 usage(void)
 {
-    fprintf(stderr, "USAGE: check_snmp_disk ");
+    fprintf(stderr, "USAGE: check_snmp_ram ");
     snmp_parse_args_usage(stderr);
     fprintf(stderr, " [OID]\n\n");
     snmp_parse_args_descriptions(stderr);
@@ -68,75 +65,34 @@ attachentry(struct hrentry_t* hentry)
     return hnew;
 }
 
-int
-filterentry(struct hrentry_t* hentry)
-{
-
-    int status = 0;
-
-    oid hrsttype_fixed_oid[] = { 1, 3, 6, 1, 2, 1, 25, 2, 1, 4 };
-    oid hrfstype_iso_oid[] = { 1, 3, 6, 1, 2, 1, 25, 3, 9, 12 };
-    oid hrfstype_other_oid[] = { 1, 3, 6, 1, 2, 1, 25, 3, 9, 1 };
-
-    size_t index_len = OID_LENGTH(hrsttype_fixed_oid);
-
-    if (netsnmp_oid_equals(hrsttype_fixed_oid, index_len, hentry->hrsttype, hentry->hrsttype_len) != 0) {
-        status = 1;
-    } else if (netsnmp_oid_equals(hrfstype_iso_oid, index_len, hentry->hrfstype, hentry->hrfstype_len) == 0) {
-        status = 1;
-    }
-
-    else if (netsnmp_oid_equals(hrfstype_other_oid, index_len, hentry->hrfstype, hentry->hrfstype_len) == 0) {
-        status = 1;
-    }
-
-    return status;
-}
-
 void
 querryentries(netsnmp_session* pss, struct hrentry_t* hentry)
 {
-
-    oid hrsttype_oid[] = { 1, 3, 6, 1, 2, 1, 25, 2, 3, 1, 2, 1 };
     oid hrstdesc_oid[] = { 1, 3, 6, 1, 2, 1, 25, 2, 3, 1, 3, 1 };
     oid hrstaunit_oid[] = { 1, 3, 6, 1, 2, 1, 25, 2, 3, 1, 4, 1 };
     oid hrstsize_oid[] = { 1, 3, 6, 1, 2, 1, 25, 2, 3, 1, 5, 1 };
     oid hrstused_oid[] = { 1, 3, 6, 1, 2, 1, 25, 2, 3, 1, 6, 1 };
 
-    oid hrfstype_oid[] = { 1, 3, 6, 1, 2, 1, 25, 3, 8, 1, 4, 1 };
-
-    size_t index_len = OID_LENGTH(hrsttype_oid);
+    size_t index_len = OID_LENGTH(hrstdesc_oid);
 
     netsnmp_variable_list *vars, *vp;
 
     do {
         vars = NULL;
-        hrsttype_oid[index_len - 1] = hentry->hrstind;
         hrstdesc_oid[index_len - 1] = hentry->hrstind;
         hrstaunit_oid[index_len - 1] = hentry->hrstind;
         hrstsize_oid[index_len - 1] = hentry->hrstind;
         hrstused_oid[index_len - 1] = hentry->hrstind;
 
-        snmp_varlist_add_variable(&vars, hrsttype_oid, index_len, ASN_NULL, NULL, 0);
         snmp_varlist_add_variable(&vars, hrstdesc_oid, index_len, ASN_NULL, NULL, 0);
         snmp_varlist_add_variable(&vars, hrstaunit_oid, index_len, ASN_NULL, NULL, 0);
         snmp_varlist_add_variable(&vars, hrstsize_oid, index_len, ASN_NULL, NULL, 0);
         snmp_varlist_add_variable(&vars, hrstused_oid, index_len, ASN_NULL, NULL, 0);
-        if (hentry->hrfsind != 0) {
-
-            hrfstype_oid[index_len - 1] = hentry->hrfsind;
-
-            snmp_varlist_add_variable(&vars, hrfstype_oid, index_len, ASN_NULL, NULL, 0);
-        }
 
         netsnmp_query_get(vars, pss);
 
         for (vp = vars; vp; vp = vp->next_variable) {
 
-            if (netsnmp_oid_equals(hrsttype_oid, index_len, vp->name, vp->name_length) == 0) {
-                memcpy(hentry->hrsttype, vp->val.objid, vp->val_len);
-                hentry->hrsttype_len = (vp->val_len / sizeof(oid));
-            }
             if (netsnmp_oid_equals(hrstdesc_oid, index_len, vp->name, vp->name_length) == 0) {
                 memcpy(hentry->hrstdesc, vp->val.string, vp->val_len);
             }
@@ -148,10 +104,6 @@ querryentries(netsnmp_session* pss, struct hrentry_t* hentry)
             }
             if (netsnmp_oid_equals(hrstused_oid, index_len, vp->name, vp->name_length) == 0) {
                 hentry->hrstused = *vp->val.integer;
-            }
-            if (netsnmp_oid_equals(hrfstype_oid, index_len, vp->name, vp->name_length) == 0) {
-                memcpy(hentry->hrfstype, vp->val.objid, vp->val_len);
-                hentry->hrfstype_len = (vp->val_len / sizeof(oid));
             }
         }
         hentry = hentry->prev;
@@ -170,11 +122,11 @@ main(int argc, char** argv)
     struct hrentry_t* hentry = NULL;
     struct hrentry_t* hfree = NULL;
 
-    oid hrfsstindex_oid[] = { 1, 3, 6, 1, 2, 1, 25, 3, 8, 1, 7 };
-    size_t hrfsstindex_len = OID_LENGTH(hrfsstindex_oid);
+    oid hrsttype_oid[] = { 1, 3, 6, 1, 2, 1, 25, 2, 3, 1, 2 };
+    size_t hrsttype_len = OID_LENGTH(hrsttype_oid);
 
-    netsnmp_variable_list* hrfsstindex_var = NULL;
-    netsnmp_variable_list* hrfsst_var = NULL;
+    netsnmp_variable_list* hrsttype_var = NULL;
+    netsnmp_variable_list* hrst_var = NULL;
 
     netsnmp_session session, *ss;
 
@@ -206,9 +158,9 @@ main(int argc, char** argv)
     }
 
     /* Walk Indexes */
-    snmp_varlist_add_variable(&hrfsstindex_var, hrfsstindex_oid, hrfsstindex_len, ASN_NULL, NULL, 0);
+    snmp_varlist_add_variable(&hrsttype_var, hrsttype_oid, hrsttype_len, ASN_NULL, NULL, 0);
 
-    query_status = netsnmp_query_walk(hrfsstindex_var, ss);
+    query_status = netsnmp_query_walk(hrsttype_var, ss);
     if (query_status != SNMP_ERR_NOERROR) {
         if (query_status == STAT_TIMEOUT) {
             fprintf(stderr, "Timeout: No Response from %s\n", ss->peername);
@@ -218,64 +170,75 @@ main(int argc, char** argv)
         exit(STATUS_UNKNOWN);
     }
 
-    /* Retrieve indexes */
-    for (hrfsst_var = hrfsstindex_var; hrfsst_var; hrfsst_var = hrfsst_var->next_variable) {
+    oid hrsttype_ram_oid[] = { 1, 3, 6, 1, 2, 1, 25, 2, 1, 2 };
+    oid hrsttype_other_oid[] = { 1, 3, 6, 1, 2, 1, 25, 2, 1, 1 };
 
-        if (*hrfsst_var->val.integer != 0) {
+    size_t index_len = OID_LENGTH(hrsttype_ram_oid);
+
+    /* Retrieve indexes */
+    for (hrst_var = hrsttype_var; hrst_var; hrst_var = hrst_var->next_variable) {
+
+        if ((netsnmp_oid_equals(hrsttype_ram_oid, index_len, hrst_var->val.objid, (hrst_var->val_len / sizeof(oid))) ==
+             0) ||
+            (netsnmp_oid_equals(
+                 hrsttype_other_oid, index_len, hrst_var->val.objid, (hrst_var->val_len / sizeof(oid))) == 0)) {
+
             hentry = attachentry(hentry);
-            hentry->hrstind = *hrfsst_var->val.integer;
-            hentry->hrfsind = hrfsst_var->name[hrfsst_var->name_length - 1];
+            hentry->hrstind = hrst_var->name[hrst_var->name_length - 1];
         }
     }
 
-    snmp_free_var(hrfsstindex_var);
+    snmp_free_var(hrsttype_var);
 
     /* Query Entries  */
     querryentries(ss, hentry);
     snmp_close(ss);
 
     /* Prepare Output */
+    long unsigned total = 0;
+    long unsigned total_used = 0;
 
-    long unsigned hsize[MAX_ENTRIES];
-    long unsigned hused[MAX_ENTRIES];
-    char bhused[MAX_ENTRIES][10];
+    long unsigned buffers_used = 0;
+    long unsigned cached_used = 0;
 
-    float hpused[MAX_ENTRIES];
+    char btotal[10];
+    char btotal_used[10];
 
-    char hrstdesc[MAX_ENTRIES][MAX_OCTETSTRING_LEN];
-    int i = -1;
+    float pused = 0;
 
     for (hfree = hentry; hfree; hfree = hfree->prev) {
-        if (filterentry(hfree)) {
-            continue;
+        if (strcasestr(hfree->hrstdesc, "physical")) {
+            total = (hfree->hrstaunit * hfree->hrstsize);
+            total_used = (hfree->hrstaunit * hfree->hrstused);
+        } else if (strcasestr(hfree->hrstdesc, "buffers")) {
+            buffers_used = (hfree->hrstaunit * hfree->hrstused);
+        } else if (strcasestr(hfree->hrstdesc, "Cached")) {
+            cached_used = (hfree->hrstaunit * hfree->hrstused);
         }
-        i++;
-
-        hsize[i] = (hfree->hrstaunit * hfree->hrstsize);
-        hused[i] = (hfree->hrstaunit * hfree->hrstused);
-        hpused[i] = (float)(hused[i] * 100) / hsize[i];
-
-        readable_fs(hused[i], &bhused[i][0]);
-        strcpy(&hrstdesc[i][0], hfree->hrstdesc);
     }
 
     for (hfree = hentry; hfree; hfree = hfree->prev) {
         free(hfree);
     }
 
-    for (int n = 0; n <= i; ++n) {
-        if (hpused[n] >= warning) {
-            exit_status = STATUS_WARNING;
-        }
-        if (hpused[n] >= critical) {
-            exit_status = STATUS_CRITICAL;
-            break;
-        }
+    total_used = total_used - (buffers_used + cached_used);
+    if (total_used > 0 && total > 0) {
+        pused = (float)(total_used * 100) / total;
     }
 
-    char* wexit_msg = "DISK WARNING -";
-    char* cexit_msg = "DISK CRITICAL -";
-    char* oexit_msg = "DISK OK -";
+    readable_fs(total, btotal);
+    readable_fs(total_used, btotal_used);
+
+    if (pused >= warning) {
+        exit_status = STATUS_WARNING;
+    }
+    if (pused >= critical) {
+        exit_status = STATUS_CRITICAL;
+    }
+
+    char* wexit_msg = "RAM WARNING -";
+    char* cexit_msg = "RAM CRITICAL -";
+    char* oexit_msg = "RAM OK -";
     char* exit_msg;
 
     switch (exit_status) {
@@ -291,17 +254,9 @@ main(int argc, char** argv)
             exit_msg = oexit_msg;
     }
 
-    printf("%s used space:", exit_msg);
-
-    for (int n = 0; n <= i; ++n) {
-        printf(" %s %s (%.1f%%);", hrstdesc[n], bhused[n], hpused[n]);
-    }
-
+    printf("%s mem used: %s / %s (%1.f%%)", exit_msg, btotal_used, btotal, pused);
     printf("|");
-
-    for (int n = 0; n <= i; ++n) {
-        printf(" '%s'=%s", hrstdesc[n], bhused[n]);
-    }
+    printf(" 'total_used'=%s total_size'=%s", btotal_used, btotal);
 
     return exit_status;
 }

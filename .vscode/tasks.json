@@ -16,6 +16,13 @@
             "type": "shell",
             "group": "test",
             "problemMatcher": []
-        }
+        },
+	{
+            "taskName": "check_snmp_ram",
+            "command": "./build/bin/check_snmp_ram -v2c -c public localhost",
+            "type": "shell",
+            "group": "test",
+            "problemMatcher": []
+	}
     ]
 }

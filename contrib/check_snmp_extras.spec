@@ -31,5 +31,6 @@ popd
 
 %attr(0755, -, -) %{_libdir}/nagios/plugins/check_snmp_disk
 %attr(0755, -, -) %{_libdir}/nagios/plugins/check_snmp_load
+%attr(0755, -, -) %{_libdir}/nagios/plugins/check_snmp_ram
 
 %config %{_datadir}/icinga2/include/plugins-contrib.d/check_snmp_extras.conf

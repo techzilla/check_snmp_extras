@@ -28,7 +28,7 @@ struct hrentry_t
 void
 usage(void)
 {
-    fprintf(stderr, "USAGE: check_snmp_disk ");
+    fprintf(stderr, "USAGE: check_snmp_load ");
     snmp_parse_args_usage(stderr);
     fprintf(stderr, " [OID]\n\n");
     snmp_parse_args_descriptions(stderr);
@@ -184,14 +184,13 @@ main(int argc, char** argv)
 
     float hpload_avg = 0;
     long unsigned hpload_sum = 0;
-    
+
     for (int n = 0; n <= i; ++n) {
         hpload_sum = hpload_sum + hpload[n];
     }
     if (i > 0 && hpload_sum > 0) {
         hpload_avg = hpload_sum / (i + 1);
     }
-
 
     for (int n = 0; n <= i; ++n) {
 
@@ -231,8 +230,8 @@ main(int argc, char** argv)
     printf("|");
 
     for (int n = 0; n <= i; ++n) {
-         printf(" '%s_%d'=%lu%%", hdesc[n], n, hpload[n]);
-     }
+        printf(" '%s_%d'=%lu%%", hdesc[n], n, hpload[n]);
+    }
 
     return exit_status;
 }
