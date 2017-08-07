@@ -255,7 +255,7 @@ main(int argc, char** argv)
         hused[i] = (hfree->hrstaunit * hfree->hrstused);
         hpused[i] = (float)(hused[i] * 100) / hsize[i];
 
-        readable_fs(hused[i], &bhused[i][0]);
+        readable_fs((double)hused[i], &bhused[i][0]);
         strcpy(&hrstdesc[i][0], hfree->hrstdesc);
     }
 

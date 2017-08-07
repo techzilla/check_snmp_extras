@@ -226,8 +226,8 @@ main(int argc, char** argv)
         pused = (float)(total_used * 100) / total;
     }
 
-    readable_fs(total, btotal);
-    readable_fs(total_used, btotal_used);
+    readable_fs((double)total, btotal);
+    readable_fs((double)total_used, btotal_used);
 
     if (pused >= warning) {
         exit_status = STATUS_WARNING;
@@ -256,7 +256,7 @@ main(int argc, char** argv)
 
     printf("%s mem used: %s / %s (%1.f%%)", exit_msg, btotal_used, btotal, pused);
     printf("|");
-    printf(" 'total_used'=%s total_size'=%s", btotal_used, btotal);
+    printf(" 'total_used'=%s 'total_size'=%s", btotal_used, btotal);
 
     return exit_status;
 }

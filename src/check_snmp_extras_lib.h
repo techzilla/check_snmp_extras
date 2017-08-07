@@ -11,6 +11,6 @@
 #define CHECK_SNMP_EXTRAS_LIB_H
 
 char*
-readable_fs(long unsigned bytes, char* buf);
+readable_fs(double bytes, char* buf);
 
 #endif /* CHECK_SNMP_EXTRAS_LIB_H */

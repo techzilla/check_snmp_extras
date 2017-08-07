@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 char*
-readable_fs(long unsigned bytes, char* buf)
+readable_fs(double bytes, char* buf)
 {
     int i = 0;
     const char* units[] = { "B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
@@ -18,6 +18,6 @@ readable_fs(long unsigned bytes, char* buf)
         bytes /= 1024;
         i++;
     }
-    sprintf(buf, "%lu%s", bytes, units[i]);
+    sprintf(buf, "%.2f%s", bytes, units[i]);
     return buf;
 }
