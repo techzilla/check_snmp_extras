@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project("check-snmp-extras" VERSION 0.0.1 LANGUAGES C)
+project("check-snmp-extras" VERSION 0.0.3 LANGUAGES C)
 
 ## Compiler Flags
 set(CMAKE_C_STANDARD 11)

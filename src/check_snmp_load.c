@@ -12,8 +12,8 @@
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 
-int warning = 80;
-int critical = 90;
+int warning = 85;
+int critical = 95;
 
 struct hrentry_t
 {
@@ -28,18 +28,51 @@ struct hrentry_t
 void
 usage(void)
 {
-    fprintf(stderr, "USAGE: check_snmp_load ");
+    fprintf(stderr, "USAGE: check_snmp_load");
     snmp_parse_args_usage(stderr);
-    fprintf(stderr, " [OID]\n\n");
+    fprintf(stderr, "\n\n");
     snmp_parse_args_descriptions(stderr);
     fprintf(stderr, "Application specific options.\n");
     fprintf(stderr, "  -C APPOPTS\n");
+    fprintf(stderr, "\t\t\t  c:  Set the critical threshold.\n");
+    fprintf(stderr, "\t\t\t  w:  Set the warning threshold.\n");
 }
 
-void
-optProc(int argc, char* const* argv, int opt)
+static void
+opt_proc(int argc, char* const* argv, int opt)
 {
-    return;
+    switch (opt) {
+        case 'C':
+            while (*optarg) {
+                switch (*optarg++) {
+                    case 'w':
+                        optind++;
+                        if (optind < argc) {
+                            warning = atoi(argv[optind - 1]);
+                        } else {
+                            fprintf(stderr, "No number name passed to -Cw");
+                            exit(STATUS_UNKNOWN);
+                        }
+                        break;
+                    case 'c':
+                        optind++;
+                        if (optind < argc) {
+                            critical = atoi(argv[optind - 1]);
+                        } else {
+                            fprintf(stderr, "No number name passed to -Cc");
+                            exit(STATUS_UNKNOWN);
+                        }
+                        break;
+                    default:
+                        fprintf(stderr, "Unknown flag passed to -C: %c", optarg[-1]);
+                        exit(STATUS_UNKNOWN);
+                        break;
+                }
+            }
+            break;
+        default:
+            break;
+    }
 }
 
 struct hrentry_t*
@@ -110,7 +143,7 @@ main(int argc, char** argv)
     init_snmp(argv[0]);
     snmp_sess_init(&session);
 
-    switch (arg = snmp_parse_args(argc, argv, &session, "C:", optProc)) {
+    switch (arg = snmp_parse_args(argc, argv, &session, "C:", opt_proc)) {
         case NETSNMP_PARSE_ARGS_ERROR:
             exit(STATUS_UNKNOWN);
         case NETSNMP_PARSE_ARGS_SUCCESS_EXIT:

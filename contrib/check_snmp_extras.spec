@@ -1,5 +1,5 @@
 Name:           check-snmp-extras
-Version:        0.0.1
+Version:        0.0.3
 Release:        1%{?dist}
 Summary:        Extra SNMP check plugins
 

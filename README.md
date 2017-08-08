@@ -8,7 +8,7 @@ MIB objects:
 ### Usage
 
 
-    ./check_snmp_disk -v 2c -c <COMMUNITY> <HOSTNAME>
+    ./check_snmp_disk -v 2c -c <COMMUNITY> -Cw 85 -Cw 95 <HOSTNAME>
 
 
 ### Prerequisites
