@@ -17,8 +17,8 @@ int critical = 95;
 
 struct hrentry_t
 {
-    unsigned hrprind;
-    long unsigned hrprload;
+    oid hrprind;
+    long hrprload;
 
     char hrddesc[MAX_OCTETSTRING_64_LEN];
 
@@ -195,7 +195,7 @@ main(int argc, char** argv)
 
     /* Prepare Output */
 
-    long unsigned hpload[MAX_ENTRIES];
+    long hpload[MAX_ENTRIES];
     char hdesc[MAX_ENTRIES][MAX_OCTETSTRING_64_LEN];
 
     int i = -1;
@@ -236,10 +236,10 @@ main(int argc, char** argv)
         }
     }
 
-    char* wexit_msg = "LOAD WARNING -";
-    char* cexit_msg = "LOAD CRITICAL -";
-    char* oexit_msg = "LOAD OK -";
-    char* exit_msg;
+    const char* wexit_msg = "LOAD WARNING -";
+    const char* cexit_msg = "LOAD CRITICAL -";
+    const char* oexit_msg = "LOAD OK -";
+    const char* exit_msg;
 
     switch (exit_status) {
 

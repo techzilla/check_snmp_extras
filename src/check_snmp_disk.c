@@ -17,12 +17,12 @@ int critical = 95;
 
 struct hrentry_t
 {
-    unsigned hrstind;
-    unsigned hrfsind;
+    oid hrstind;
+    oid hrfsind;
 
-    long unsigned hrstaunit;
-    long unsigned hrstsize;
-    long unsigned hrstused;
+    long hrstaunit;
+    long hrstsize;
+    long hrstused;
 
     oid hrsttype[MAX_OID_LEN];
     size_t hrsttype_len;
@@ -256,7 +256,7 @@ main(int argc, char** argv)
 
         if (*hrfsst_var->val.integer != 0) {
             hentry = attachentry(hentry);
-            hentry->hrstind = *hrfsst_var->val.integer;
+            hentry->hrstind = (oid) *hrfsst_var->val.integer;
             hentry->hrfsind = hrfsst_var->name[hrfsst_var->name_length - 1];
         }
     }
@@ -269,8 +269,8 @@ main(int argc, char** argv)
 
     /* Prepare Output */
 
-    long unsigned hsize[MAX_ENTRIES];
-    long unsigned hused[MAX_ENTRIES];
+    long hsize[MAX_ENTRIES];
+    long hused[MAX_ENTRIES];
     char bhused[MAX_ENTRIES][10];
 
     float hpused[MAX_ENTRIES];
@@ -306,10 +306,10 @@ main(int argc, char** argv)
         }
     }
 
-    char* wexit_msg = "DISK WARNING -";
-    char* cexit_msg = "DISK CRITICAL -";
-    char* oexit_msg = "DISK OK -";
-    char* exit_msg;
+    const char* wexit_msg = "DISK WARNING -";
+    const char* cexit_msg = "DISK CRITICAL -";
+    const char* oexit_msg = "DISK OK -";
+    const char* exit_msg;
 
     switch (exit_status) {
 

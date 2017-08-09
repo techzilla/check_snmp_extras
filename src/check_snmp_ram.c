@@ -17,11 +17,11 @@ int critical = 95;
 
 struct hrentry_t
 {
-    unsigned hrstind;
+    oid hrstind;
 
-    long unsigned hrstaunit;
-    long unsigned hrstsize;
-    long unsigned hrstused;
+    long hrstaunit;
+    long hrstsize;
+    long hrstused;
 
     oid hrsttype[MAX_OID_LEN];
     size_t hrsttype_len;
@@ -228,11 +228,11 @@ main(int argc, char** argv)
     snmp_close(ss);
 
     /* Prepare Output */
-    long unsigned total = 0;
-    long unsigned total_used = 0;
+    long total = 0;
+    long total_used = 0;
 
-    long unsigned buffers_used = 0;
-    long unsigned cached_used = 0;
+    long buffers_used = 0;
+    long cached_used = 0;
 
     char btotal[10];
     char btotal_used[10];
@@ -269,10 +269,10 @@ main(int argc, char** argv)
         exit_status = STATUS_CRITICAL;
     }
 
-    char* wexit_msg = "RAM WARNING -";
-    char* cexit_msg = "RAM CRITICAL -";
-    char* oexit_msg = "RAM OK -";
-    char* exit_msg;
+    const char* wexit_msg = "RAM WARNING -";
+    const char* cexit_msg = "RAM CRITICAL -";
+    const char* oexit_msg = "RAM OK -";
+    const char* exit_msg;
 
     switch (exit_status) {
 
