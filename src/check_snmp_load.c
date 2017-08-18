@@ -7,7 +7,7 @@
  *  @date 7/27/17
  */
 
-#include "check_snmp_extras.h"
+#include "check_snmp_extras_lib.h"
 
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
