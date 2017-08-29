@@ -17,12 +17,19 @@
             "group": "test",
             "problemMatcher": []
         },
-	{
+        {
             "taskName": "check_snmp_ram",
             "command": "./build/bin/check_snmp_ram -v2c -c public localhost",
             "type": "shell",
             "group": "test",
             "problemMatcher": []
-	}
+        },
+        {
+            "taskName": "check_by_snmpextend",
+            "command": "./build/bin/check_by_snmpextend -v2c -c public -CE check_dns_hostname localhost",
+            "type": "shell",
+            "group": "test",
+            "problemMatcher": []
+        }
     ]
 }

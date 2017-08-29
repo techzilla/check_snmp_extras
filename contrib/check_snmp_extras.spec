@@ -1,5 +1,5 @@
 Name:           check-snmp-extras
-Version:        0.0.3
+Version:        0.0.4
 Release:        1%{?dist}
 Summary:        Extra SNMP check plugins
 
@@ -32,5 +32,6 @@ popd
 %attr(0755, -, -) %{_libdir}/nagios/plugins/check_snmp_disk
 %attr(0755, -, -) %{_libdir}/nagios/plugins/check_snmp_load
 %attr(0755, -, -) %{_libdir}/nagios/plugins/check_snmp_ram
+%attr(0755, -, -) %{_libdir}/nagios/plugins/check_by_snmpextend
 
 %config %{_datadir}/icinga2/include/plugins-contrib.d/check_snmp_extras.conf

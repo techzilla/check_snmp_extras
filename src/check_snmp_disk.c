@@ -198,7 +198,7 @@ main(int argc, char** argv)
 {
     int arg;
     int query_status;
-    int exit_status = STATUS_OK;
+    int exit_status = STATUS_UNKNOWN;
 
     struct hrentry_t* hentry = NULL;
     struct hrentry_t* hfree = NULL;
@@ -256,7 +256,7 @@ main(int argc, char** argv)
 
         if (*hrfsst_var->val.integer != 0) {
             hentry = attachentry(hentry);
-            hentry->hrstind = (oid) *hrfsst_var->val.integer;
+            hentry->hrstind = (oid)*hrfsst_var->val.integer;
             hentry->hrfsind = hrfsst_var->name[hrfsst_var->name_length - 1];
         }
     }
@@ -296,6 +296,7 @@ main(int argc, char** argv)
         free(hfree);
     }
 
+    exit_status = STATUS_OK;
     for (int n = 0; n <= i; ++n) {
         if (hpused[n] >= warning) {
             exit_status = STATUS_WARNING;

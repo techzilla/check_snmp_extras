@@ -127,7 +127,7 @@ main(int argc, char** argv)
 {
     int arg;
     int query_status;
-    int exit_status = STATUS_OK;
+    int exit_status = STATUS_UNKNOWN;
 
     struct hrentry_t* hentry = NULL;
     struct hrentry_t* hfree = NULL;
@@ -225,6 +225,7 @@ main(int argc, char** argv)
         hpload_avg = hpload_sum / (i + 1);
     }
 
+    exit_status = STATUS_OK;
     for (int n = 0; n <= i; ++n) {
 
         if (hpload_avg >= warning) {

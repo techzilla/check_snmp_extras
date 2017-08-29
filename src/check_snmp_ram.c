@@ -150,7 +150,7 @@ main(int argc, char** argv)
 {
     int arg;
     int query_status;
-    int exit_status = STATUS_OK;
+    int exit_status = STATUS_UNKNOWN;
 
     struct hrentry_t* hentry = NULL;
     struct hrentry_t* hfree = NULL;
@@ -262,6 +262,7 @@ main(int argc, char** argv)
     readable_fs((double)total, btotal);
     readable_fs((double)total_used, btotal_used);
 
+    exit_status = STATUS_OK;
     if (pused >= warning) {
         exit_status = STATUS_WARNING;
     }
