@@ -57,6 +57,8 @@ opt_proc(int argc, char* const* argv, int opt)
 int
 main(int argc, char** argv)
 {
+    exec_name[0] = '\0';
+
     int arg;
     int query_status;
     int exit_status = STATUS_UNKNOWN;
@@ -91,7 +93,7 @@ main(int argc, char** argv)
             break;
     }
 
-    if (strlen(exec_name) == 0) {
+    if (exec_name[0] == '\0') {
         printf("Exec Name Required\n");
         usage();
         exit(STATUS_UNKNOWN);

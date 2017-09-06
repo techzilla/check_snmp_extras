@@ -155,7 +155,7 @@ main(int argc, char** argv)
             break;
     }
 
-    if (critical <= warning) {
+    if (critical < warning) {
         printf("Warning limit is greater than Critical limit\n");
         usage();
         exit(STATUS_UNKNOWN);
