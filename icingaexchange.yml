@@ -1,0 +1,16 @@
+name: check-snmp-extras
+description: 'file:///README.md'
+url: 'https://github.com/techzilla/check_snmp_extras'
+tags: snmp, netsnmp, compiled, c, disk, ram, proc, load
+vendor: Linux
+target: 'SNMP, HOST-RESOURCES-MIB'
+type: Plugin
+license: gplv3
+releases:
+  - name: 0.5
+    description: First Release
+    files:
+      - name: 0.0.5.tar.gz
+        url: 'https://github.com/techzilla/check_snmp_extras/archive/0.0.5.tar.gz'
+        description: First release
+        checksum: 898b29330e52351dcc13183807564f74
