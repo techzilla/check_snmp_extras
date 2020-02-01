@@ -1,6 +1,6 @@
 # check_snmp_extras
 
-Extra SNMP check plugins, written in C.
+Extra SNMP Monitoring Check Plugins for Nagios, Icinga and Icinga2, written in C.
 
 MIB objects:
  - [HOST-RESOURCES-MIB](http://www.net-snmp.org/docs/mibs/host.html)
